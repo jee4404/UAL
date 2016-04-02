@@ -22,12 +22,12 @@ architecture structurelle of complement_deux is
     component additionneur_n_bits
         generic ( N : integer := 8);
         port (
-            -- Entrées:
-            A: in std_logic_vector(N downto 1);
-            B: in std_logic_vector(N downto 1);
+            -- Entrees:
+            A:   in std_logic_vector(N downto 1);
+            B:   in std_logic_vector(N downto 1);
             Cin: in std_logic;
             -- Sorties:
-            Q: out std_logic_vector(N downto 1);
+            Q:    out std_logic_vector(N downto 1);
             Cout: out std_logic
         );
     end component;

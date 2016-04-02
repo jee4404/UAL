@@ -1,2 +1,4 @@
 *.wlf
 work
+*.bak
+*.cr.mti

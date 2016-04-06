@@ -33,10 +33,9 @@ architecture structurelle of complement_deux is
     end component;
     
     signal s_VEC_BIN: std_logic_vector(cN downto 1);
-    signal s_B:       std_logic_vector(cN downto 1) := (cN downto 1 => '0'); -- signal pour ajouter 1
-    signal s_Cin:     std_logic; -- signal pour le carry in du additioneur
+    signal s_B:       std_logic_vector(cN downto 1); -- signal pour ajouter 1
     signal s_BIN_C2:  std_logic_vector(cN downto 1); -- signal pour router sortie additionneur vers sortie compelement
-    signal s_Cout:    std_logic; -- sortie pour router sortie carry out additionneur vers OVF
+    signal s_Cout:    std_logic;                     -- sortie pour router sortie carry out additionneur vers OVF
 
 begin
     additionneur_n: additionneur_n_bits
@@ -46,23 +45,22 @@ begin
         port map(
             A    => s_VEC_BIN,
             B    => s_B,
-            Cin  => s_Cin,
+            Cin  => '0',
             Q    => s_BIN_C2,
             Cout => s_Cout
         );
         
     -- inversion du vecteur d'entree
     s_VEC_BIN <= not VEC_BIN;
-    
-    -- signal de carry in
-    s_Cin <= '0';
-    
     -- signal a un pour addition
-    s_B(1) <= '1';
+    s_B <= (cN downto 2 => '0') & '1';
 
-    -- signal C2 vers sortie complement a deux
-    BIN_C2 <= s_BIN_C2;
+    main_process: process(s_BIN_C2, s_Cout)
+    begin
+        -- signal C2 vers sortie complement a deux
+        BIN_C2 <= s_BIN_C2;
     
-    -- signal 
-    OVF <= s_Cout;
+        -- signal 
+        OVF <= s_Cout;
+    end process;
 end structurelle;

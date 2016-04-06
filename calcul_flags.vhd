@@ -48,8 +48,20 @@ begin
         s_zf_counter <= v_zf_counter;
     end process;
 
-    ZF <= '1'when (s_zf_counter = N) and (s_pf_counter = 0) else '0'; -- si on a compte autant de 0 que de bits dans le vecteur, le vecteur est nul
-    PF <= '1' when (s_pf_counter /= 0) and ((s_pf_counter mod 2) = 0) else '0'; -- si on a compte un nombre pair de vecteur, PF = 1
---    end process;
-    SF <= A(N); -- le SF vaut toujours le MSB
+    update_process: process(s_pf_counter, s_zf_counter, A)
+    begin
+        if (s_zf_counter = N) and (s_pf_counter = 0) then
+            ZF <= '1'; --when (s_zf_counter = N) and (s_pf_counter = 0) else '0'; -- si on a compte autant de 0 que de bits dans le vecteur, le vecteur est nul
+        else
+            ZF <= '0';
+        end if;
+
+        if (s_pf_counter /= 0) and ((s_pf_counter mod 2) = 0) then
+            PF <= '1'; -- when (s_pf_counter /= 0) and ((s_pf_counter mod 2) = 0) else '0'; -- si on a compte un nombre pair de vecteur, PF = 1
+        else
+            PF <= '0';
+        end if;
+
+        SF <= A(N); -- le SF vaut toujours le MSB
+    end process;
 end;

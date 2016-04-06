@@ -16,12 +16,12 @@ entity additionneur_n_bits is
     --generic ( N : positive);
     port (
         -- Entrées:
-        A: in STD_LOGIC_VECTOR(N downto 1);
-        B: in STD_LOGIC_VECTOR(N downto 1);
-        Cin: in STD_LOGIC;
+        A:    in std_logic_vector(N downto 1);
+        B:    in std_logic_vector(N downto 1);
+        Cin:  in std_logic;
         -- Sorties:
-        Q: out STD_LOGIC_VECTOR(N downto 1);
-        Cout: out STD_LOGIC
+        Q:    out std_logic_vector(N downto 1);
+        Cout: out std_logic
     );
 end additionneur_n_bits;
 
@@ -31,14 +31,14 @@ architecture structurelle of additionneur_n_bits is
 -- Declaration des composants
 -- On ne declare pas un additionneur de 1-bit si c'est definit dans package
     component additionneur
-        port(A, B, Cin : in STD_LOGIC; Q, Cout:out STD_LOGIC);
+        port(A, B, Cin : in std_logic; Q, Cout:out std_logic);
     end component;
 
     -- zone de déclaration
-    signal CS : STD_LOGIC_VECTOR (N downto 0); -- pour garder le carry
+    signal CS : std_logic_vector(N downto 0); -- pour garder le carry
 begin
     CS(0) <= Cin;
-    Cout <= CS(N);
+    Cout  <= CS(N);
     --instantiation de l'additionneur de 1 bit N fois
     sommateur: for i in 1 to N generate
         somme_de_n_bits: additionneur

@@ -52,6 +52,12 @@ architecture behavior of ual_n_bits is
     -- signaux internes de l'UAL
     signal s_R: std_logic_vector(N downto 1);
 
+    -- signaux pour le comparateur d'egalite
+    signal s_eq_Q: std_logic;
+
+    -- signaux pour le comparateur de sup
+    signal s_sup_Q: std_logic;
+
     -- declaration des composants
     component additionneur_n_bits
         generic ( N : integer := 8);
@@ -78,6 +84,17 @@ architecture behavior of ual_n_bits is
     end component;
 
     component comparateur_eq
+        generic(
+            N: integer := 8
+        );
+        port(
+            A: in  std_logic_vector(N downto 1);
+            B: in  std_logic_vector(N downto 1);
+            C: out std_logic
+        );
+    end component;
+    
+    component comparateur_sup
         generic(
             N: integer := 8
         );
@@ -129,8 +146,8 @@ begin
 	port map
 	(
 	    A  => s_calc_flags,
-            SF => SF,
-            ZF => ZF,
+        SF => SF,
+        ZF => ZF,
 	    PF => PF
 	);
 
@@ -154,7 +171,7 @@ begin
             A   => A,
             B   => B,
             Q   => s_sub_Q,
-	    OVF => OVF
+            OVF => OVF
         );
 
     c_decalage_gauche_A: decalage_gauche
@@ -193,19 +210,41 @@ begin
             B => s_rorB_Q
         );
 
-    -- operations arithmetiques
-    s_R <= s_add_Q  when C = "000" -- addition
-    else s_sub_Q  when C = "001" -- soustraction
-    else s_rolA_Q when C = "100" -- decalage a gauche de A
-    else s_rolB_Q when C = "101" -- decalage a gauche de B
-    else s_rorA_Q when C = "110" -- decalage a droite de A
-    else s_rorB_Q when C = "111" -- decalage a droite de B
-    else (N downto 1 => '0');
+    c_comparateur_eq: comparateur_eq
+        generic map(
+            N => N
+        )
+        port map(
+            A => A,
+            B => B,
+            C => s_eq_Q
+        );
+
+    c_comparateur_sup_A: comparateur_sup
+        generic map(
+            N => N
+        )
+        port map(
+            A => A,
+            B => B,
+            C => s_sup_Q
+        );
 
     -- mise a jour des drapeaux et de la sortie
-    flag_process: process(s_R)
+    flag_process: process(s_R) 
     begin
         s_calc_flags <= s_R;
-	R <= s_R;
+        R <= s_R;
     end process;
+
+    -- operations arithmetiques
+    s_R <= s_add_Q  when C = "000" -- addition
+    else s_sub_Q  when C = "001"   -- soustraction
+    else (N downto 2 => '0') & s_eq_Q  when C = "010"   -- egalite
+    else (N downto 2 => '0') & s_sup_Q when C = "011"   -- superiorite
+    else s_rolA_Q when C = "100"   -- decalage a gauche de A
+    else s_rolB_Q when C = "101"   -- decalage a gauche de B
+    else s_rorA_Q when C = "110"   -- decalage a droite de A
+    else s_rorB_Q when C = "111"   -- decalage a droite de B
+    else (N downto 1 => '0');
 end;
